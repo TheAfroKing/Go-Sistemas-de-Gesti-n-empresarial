@@ -7,3 +7,5 @@ Actualmente este repositorio solo contiene el [PDF](https://github.com/TheAfroKi
 
 ![Diagrama de clases](https://github.com/TheAfroKing/Go-Sistemas-de-Gesti-n-empresarial/blob/master/Diagrama%20de%20clases%20-%20E-commerce.png)
 
+[Video Explicativo](https://youtu.be/vJ2sZOafwcI)
+
