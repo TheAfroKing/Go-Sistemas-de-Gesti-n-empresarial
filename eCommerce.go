@@ -333,6 +333,14 @@ func (t *Tienda) ListarClientes() {
 		fmt.Printf("[ID: %d] %s (Email: %s)\n", c.idCliente, c.nombre, c.email)
 	}
 }
+func (t *Tienda) ValidarCliente(idCliente int) error {
+	for _, c := range t.clientes {
+		if c.idCliente == idCliente {
+			return nil // El cliente existe
+		}
+	}
+	return errors.New("el cliente con ese ID no existe")
+}
 
 /*
 ==========================================
@@ -423,6 +431,10 @@ func main() {
 		case 3:
 			tienda.ListarClientes()
 			idCliente := leerEntero("ID Cliente: ", reader)
+			if err := tienda.ValidarCliente(idCliente); err != nil {
+				fmt.Println(">> Error:", err)
+				continue
+			}
 			tienda.ListarProductos()
 			idProd := leerEntero("ID Producto a comprar: ", reader)
 
@@ -449,6 +461,10 @@ func main() {
 		case 4:
 			tienda.ListarClientes()
 			idCliente := leerEntero("ID Cliente: ", reader)
+			if err := tienda.ValidarCliente(idCliente); err != nil {
+				fmt.Println(">> Error:", err)
+				continue
+			}
 			carrito := tienda.ObtenerCarrito(idCliente)
 			fmt.Printf("--- CARRITO DE CLIENTE %d ---\n", idCliente)
 			if len(carrito.GetProductos()) == 0 {
@@ -463,7 +479,10 @@ func main() {
 		case 5:
 			tienda.ListarClientes()
 			idCliente := leerEntero("ID Cliente para Checkout: ", reader)
-			// Manejo de errores explícito al crear pedido
+			if err := tienda.ValidarCliente(idCliente); err != nil {
+				fmt.Println(">> Error:", err)
+				continue
+			}
 			if err := tienda.CrearPedido(idCliente); err != nil {
 				fmt.Printf(">> NO SE PUDO CREAR EL PEDIDO: %s\n", err.Error())
 			}
