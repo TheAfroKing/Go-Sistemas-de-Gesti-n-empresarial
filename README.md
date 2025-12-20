@@ -79,9 +79,7 @@ El servidor por defecto escucha en el puerto definido por `PORT` (8080 por defec
 
 ## Base de datos
 Se asume un esquema MySQL con tablas para `clientes`, `productos`, `carritos`,
-`items_carrito`, `pedidos` y `detalles_pedido`. Asegúrate de crear las tablas y
-usuario/privilegios antes de ejecutar la aplicación. Puedes adaptar los nombres
-de columnas en las consultas si tu esquema difiere.
+`items_carrito`, `pedidos` y `detalles_pedido`. 
 
 ## Diagramas
 - Diagrama de Clases
