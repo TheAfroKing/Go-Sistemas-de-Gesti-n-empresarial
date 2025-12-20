@@ -21,7 +21,7 @@ func Connect() (*sql.DB, error) {
 		return nil, err
 	}
 	// loq ue hacer es configurar la de conexion con mysql
-	fmt.Sprintf("root:@tcp(localhost:3306)/pooenlinea")
+	log.Println("root:@tcp(localhost:3306)/pooenlinea")
 	dns := fmt.Sprintf("%v:%v@tcp(%v:%v)/%v?parseTime=true",
 		os.Getenv("DB_USER"),
 		os.Getenv("DB_PASSWORD"),
