@@ -85,8 +85,10 @@ de columnas en las consultas si tu esquema difiere.
 
 ## Diagramas
 - Diagrama de Clases
+
 ![Diagrana de Clases](https://github.com/TheAfroKing/Go-Sistemas-de-Gestion-empresarial/blob/master/Diagrama%20de%20clases%20-%20final.png)
 - Diagrama de Arquitectura
+
 ![Diagrana de Clases](https://github.com/TheAfroKing/Go-Sistemas-de-Gestion-empresarial/blob/master/Diagrama%20de%20arquitectura.png)
 
 
