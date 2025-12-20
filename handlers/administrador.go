@@ -147,6 +147,7 @@ func AdminProductCreate(w http.ResponseWriter, r *http.Request) {
 	data := struct {
 		Perfil          string
 		IsEdit          bool
+		Producto        models.Producto
 		ProductosActive bool
 		DashboardActive bool
 		PedidosActive   bool
@@ -154,10 +155,15 @@ func AdminProductCreate(w http.ResponseWriter, r *http.Request) {
 	}{
 		Perfil:          perfil,
 		IsEdit:          false,
+		Producto:        models.Producto{},
 		ProductosActive: true,
 	}
 
-	tmpl.ExecuteTemplate(w, "layout", data)
+	if err := tmpl.ExecuteTemplate(w, "layout", data); err != nil {
+		log.Println("Error ejecutando template admin product form:", err)
+		http.Error(w, "Error ejecutando template", http.StatusInternalServerError)
+		return
+	}
 }
 
 func AdminProductEdit(w http.ResponseWriter, r *http.Request) {
