@@ -8,6 +8,8 @@ import (
 )
 
 func AgregarItemCarrito(w http.ResponseWriter, r *http.Request) {
+	// AgregarItemCarrito procesa la solicitud POST para añadir un producto
+	// al carrito del cliente autenticado. Crea un carrito si no existe.
 
 	if r.Method == "POST" {
 		loggedIn, _, userIDStr := GetSessionData(r)

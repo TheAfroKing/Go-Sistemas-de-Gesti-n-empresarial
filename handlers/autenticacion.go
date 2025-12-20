@@ -10,6 +10,8 @@ import (
 )
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
+	// LoginHandler procesa el inicio de sesión: verifica credenciales y crea cookies
+	// de sesión con `user_id`, `user_perfil` y `token` si el login es exitoso.
 	if r.Method == "POST" {
 		email := r.FormValue("email")
 		password := r.FormValue("password")
@@ -72,6 +74,8 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
+	// RegisterHandler maneja el registro de nuevos usuarios. En POST crea el cliente
+	// y redirige al login; en GET muestra el formulario de registro.
 	if r.Method == "POST" {
 		err := models.CreateCliente(r.FormValue("nombre"), r.FormValue("email"), r.FormValue("password"), r.FormValue("direccion"), r.FormValue("telefono"))
 		if err != nil {
@@ -106,6 +110,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
+	// LogoutHandler limpia las cookies de sesión y redirige a la página principal.
 
 	http.SetCookie(w, &http.Cookie{
 		Name:     "user_id",
@@ -132,6 +137,8 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetSessionData(r *http.Request) (bool, string, string) {
+	// GetSessionData devuelve (loggedIn, perfil, id) consultando las cookies de sesión.
+	// `loggedIn` es true si existe la cookie `token` con valor "true".
 	tokenCookie, err := r.Cookie("token")
 	if err != nil || tokenCookie.Value != "true" {
 		return false, "", ""

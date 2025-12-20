@@ -8,6 +8,8 @@ import (
 )
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
+	// HomeHandler muestra la página principal con los productos activos disponibles.
+	// Filtra productos por `Activo` y `Stock > 0`, carga templates y renderiza la vista.
 	productos, err := models.GetAllProductos()
 	if err != nil {
 		log.Println("Error al obtener los productos", err)
@@ -23,7 +25,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	tmpl, err := template.ParseFiles("templates/base.html", "templates/products.html")
+	tmpl, err := template.ParseFiles("templates/base.html", "templates/cliente/productos.html")
 	if err != nil {
 		log.Println("Error al cargar el template de home", err)
 		http.Error(w, "Error interno del servidor", http.StatusInternalServerError)

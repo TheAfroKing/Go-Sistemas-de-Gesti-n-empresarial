@@ -26,8 +26,9 @@
                                     <td>{{.Cantidad}}</td>
                                     <td>${{printf "%.2f" .Subtotal}}</td>
                                     <td>
-                                        <a href="#" class="text-danger" title="Eliminar"><i
-                                                class="fas fa-trash"></i></a>
+                                        <a href="/carrito/eliminar/{{.ID}}" class="text-danger" title="Eliminar">
+                                            <i class="fas fa-trash"></i> Quitar
+                                        </a>
                                     </td>
                                 </tr>
                                 {{end}}

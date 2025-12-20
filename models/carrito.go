@@ -52,6 +52,7 @@ func GetCarritoByID(id int) (Carrito, error) {
 }
 
 func GetCarritoByClienteID(id int) (Carrito, error) {
+	// GetCarritoByClienteID devuelve el carrito asociado a un cliente por su ID.
 	var carrito Carrito
 	DB, err := db.Connect()
 	if err != nil {
@@ -81,6 +82,7 @@ func GetCarritoByClienteID(id int) (Carrito, error) {
 }
 
 func CreateCarrito(idCliente int) error {
+	// CreateCarrito crea un carrito para el cliente si no existe; es idempotente.
 	log.Println("Cliente ID", idCliente)
 
 	DB, err := db.Connect()
@@ -114,6 +116,7 @@ func CreateCarrito(idCliente int) error {
 }
 
 func DeleteCarrito(id int) error {
+	// DeleteCarrito elimina un carrito por su ID.
 	DB, err := db.Connect()
 	if err != nil {
 		log.Println("Error al conectar con la base de datos", err)
@@ -138,6 +141,7 @@ func DeleteCarrito(id int) error {
 }
 
 func AgregarItemCarrito(idCarrito, idProducto, cantidad int) error {
+	// AgregarItemCarrito inserta un nuevo item en el carrito especificado.
 	DB, err := db.Connect()
 	if err != nil {
 		log.Println("Error al conectar con la base de datos", err)
@@ -162,6 +166,7 @@ func AgregarItemCarrito(idCarrito, idProducto, cantidad int) error {
 }
 
 func GetItemsByCarritoID(idCarrito int) ([]ItemCarrito, error) {
+	// GetItemsByCarritoID devuelve los items pertenecientes a un carrito.
 	var items []ItemCarrito
 	DB, err := db.Connect()
 	if err != nil {
@@ -195,6 +200,7 @@ func GetItemsByCarritoID(idCarrito int) ([]ItemCarrito, error) {
 }
 
 func UpdateItemCarrito(idItem, cantidad int) error {
+	// UpdateItemCarrito actualiza la cantidad de un item del carrito.
 	DB, err := db.Connect()
 	if err != nil {
 		log.Println("Error al conectar con la base de datos", err)
@@ -219,6 +225,7 @@ func UpdateItemCarrito(idItem, cantidad int) error {
 }
 
 func EmptyCarrito(idCarrito int) error {
+	// EmptyCarrito elimina todos los items del carrito indicado.
 	DB, err := db.Connect()
 	if err != nil {
 		log.Println("Error al conectar con la base de datos", err)
@@ -239,5 +246,30 @@ func EmptyCarrito(idCarrito int) error {
 		return err
 	}
 	log.Println("Carrito vaciado exitosamente")
+	return nil
+}
+
+func RemoveItemFromCarrito(idItem int) error {
+	// RemoveItemFromCarrito elimina un item específico del carrito por su ID.
+	DB, err := db.Connect()
+	if err != nil {
+		log.Println("Error al conectar con la base de datos", err)
+		return err
+	}
+	defer DB.Close()
+
+	stmt, err := DB.Prepare("DELETE FROM items_carrito WHERE id_item = ?")
+	if err != nil {
+		log.Println("Error al preparar la consulta sql", err)
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(idItem)
+	if err != nil {
+		log.Println("Error al ejecutar la consulta sql", err)
+		return err
+	}
+	log.Println("Item eliminado del carrito exitosamente")
 	return nil
 }

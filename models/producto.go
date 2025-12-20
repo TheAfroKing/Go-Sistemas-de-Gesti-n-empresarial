@@ -8,6 +8,7 @@ import (
 	"time"
 )
 
+// Producto representa un artículo disponible en la tienda.
 type Producto struct {
 	ID            int
 	Nombre        string
@@ -19,11 +20,13 @@ type Producto struct {
 	FechaCreacion time.Time
 }
 
+// ProductoCategoria representa la relación entre productos y categorías.
 type ProductoCategoria struct {
 	IDProducto  int
 	IDCategoria int
 }
 
+// GetProductoByID devuelve un producto por su identificador o un error si no existe.
 func GetProductoByID(id int) (Producto, error) {
 	var producto Producto
 	DB, err := db.Connect()
@@ -57,6 +60,7 @@ func GetProductoByID(id int) (Producto, error) {
 	return producto, nil
 }
 
+// GetAllProductos devuelve la lista completa de productos en la base de datos.
 func GetAllProductos() ([]Producto, error) {
 	var productos []Producto
 	DB, err := db.Connect()
@@ -93,6 +97,7 @@ func GetAllProductos() ([]Producto, error) {
 	return productos, nil
 }
 
+// CreateProducto inserta un nuevo producto en la base de datos.
 func CreateProducto(nombre, descripcion string, precio float64, stock int, sku string, activo bool) error {
 	DB, err := db.Connect()
 	if err != nil {
@@ -117,6 +122,7 @@ func CreateProducto(nombre, descripcion string, precio float64, stock int, sku s
 	return nil
 }
 
+// UpdateProducto actualiza la información de un producto existente.
 func UpdateProducto(id int, nombre, descripcion string, precio float64, stock int, sku string, activo bool) error {
 	DB, err := db.Connect()
 	if err != nil {
@@ -141,6 +147,7 @@ func UpdateProducto(id int, nombre, descripcion string, precio float64, stock in
 	return nil
 }
 
+// DeleteProducto elimina un producto por su ID.
 func DeleteProducto(id int) error {
 	DB, err := db.Connect()
 	if err != nil {
@@ -165,6 +172,7 @@ func DeleteProducto(id int) error {
 	return nil
 }
 
+// AsignarCategoria asigna una categoría a un producto en la tabla intermedia.
 func AsignarCategoria(idProducto, idCategoria int) error {
 	DB, err := db.Connect()
 	if err != nil {

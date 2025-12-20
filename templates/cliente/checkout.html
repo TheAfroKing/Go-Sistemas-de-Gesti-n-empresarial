@@ -17,17 +17,10 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Dirección de Envío</label>
-                            <textarea class="form-control" rows="3" placeholder="Calle, Número, Ciudad..."
-                                required></textarea>
+                            <textarea class="form-control" rows="3" placeholder="Calle, Número, Ciudad..."></textarea>
                             <div class="form-text">Usaremos la dirección de tu perfil si dejas esto vacío (Simulación).
                             </div>
                         </div>
-
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle me-2"></i> Esta es una versión demo. No se realizará ningún
-                            cargo real.
-                        </div>
-
                         <button type="submit" class="btn btn-success btn-lg w-100">Confirmar Pedido (${{printf "%.2f"
                             .Total}})</button>
                     </form>

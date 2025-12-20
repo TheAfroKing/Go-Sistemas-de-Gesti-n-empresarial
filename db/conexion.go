@@ -11,6 +11,9 @@ import (
 	"github.com/joho/godotenv"
 )
 
+// Connect crea y devuelve una conexión a la base de datos MySQL usando
+// variables de entorno (`DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT`, `DB_NAME`).
+// Devuelve error si la conexión o el ping fallan.
 func Connect() (*sql.DB, error) {
 	// cargar directamente los datos desde el env
 	err := godotenv.Load()

@@ -24,7 +24,8 @@ type DetallePedido struct {
 	IDProducto     int
 	Cantidad       int
 	PrecioUnitario float64
-	Subtotal       float64
+	// DetallePedido representa una línea de un pedido con cantidad y precio unitario.
+	Subtotal float64
 }
 
 func GetPedidoByID(id int) (Pedido, error) {
@@ -217,4 +218,28 @@ func GetPedidosByClienteID(idCliente int) ([]Pedido, error) {
 		return pedidos, err
 	}
 	return pedidos, nil
+}
+
+func UpdatePedidoStatus(id int, estado string) error {
+	DB, err := db.Connect()
+	if err != nil {
+		log.Println("Error al conectar con la base de datos", err)
+		return err
+	}
+	defer DB.Close()
+
+	stmt, err := DB.Prepare("UPDATE pedidos SET estado = ? WHERE id_pedido = ?")
+	if err != nil {
+		log.Println("Error al preparar la consulta sql", err)
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(estado, id)
+	if err != nil {
+		log.Println("Error al ejecutar la consulta sql", err)
+		return err
+	}
+	log.Println("Estado del pedido actualizado exitosamente")
+	return nil
 }

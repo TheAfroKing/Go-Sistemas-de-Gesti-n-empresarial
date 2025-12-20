@@ -13,6 +13,7 @@ import (
 )
 
 func AdminDashboard(w http.ResponseWriter, r *http.Request) {
+	// AdminDashboard muestra el dashboard de administración con estadísticas generales.
 	_, perfil, _ := GetSessionData(r)
 
 	stats, err := getAdminStats()
@@ -52,11 +53,14 @@ type AdminStats struct {
 	TotalVentas    float64
 }
 
+// sqlNullFloat64 es un wrapper para sql.NullFloat64 usado internamente.
+
 type sqlNullFloat64 struct {
 	sql.NullFloat64
 }
 
 func getAdminStats() (AdminStats, error) {
+	// getAdminStats obtiene estadísticas agregadas de la base de datos para el admin.
 	var stats AdminStats
 	database, err := db.Connect()
 	if err != nil {
@@ -78,6 +82,7 @@ func getAdminStats() (AdminStats, error) {
 }
 
 func AdminProducts(w http.ResponseWriter, r *http.Request) {
+	// AdminProducts lista todos los productos en la vista de administración.
 	_, perfil, _ := GetSessionData(r)
 
 	productos, err := models.GetAllProductos()
@@ -87,7 +92,7 @@ func AdminProducts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tmpl, err := template.ParseFiles("templates/admin/layout.html", "templates/admin/products_list.html")
+	tmpl, err := template.ParseFiles("templates/admin/layout.html", "templates/admin/productos.html")
 	if err != nil {
 		log.Println("Error cargando templates admin products:", err)
 		http.Error(w, "Error cargando templates", http.StatusInternalServerError)
@@ -111,6 +116,7 @@ func AdminProducts(w http.ResponseWriter, r *http.Request) {
 }
 
 func AdminProductCreate(w http.ResponseWriter, r *http.Request) {
+	// AdminProductCreate maneja la creación de productos desde el panel admin.
 	_, perfil, _ := GetSessionData(r)
 
 	if r.Method == "POST" {
@@ -131,7 +137,7 @@ func AdminProductCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tmpl, err := template.ParseFiles("templates/admin/layout.html", "templates/admin/product_form.html")
+	tmpl, err := template.ParseFiles("templates/admin/layout.html", "templates/admin/formulario_producto.html")
 	if err != nil {
 		log.Println("Error cargando template admin product form:", err)
 		http.Error(w, "Error cargando templates", http.StatusInternalServerError)
@@ -155,6 +161,7 @@ func AdminProductCreate(w http.ResponseWriter, r *http.Request) {
 }
 
 func AdminProductEdit(w http.ResponseWriter, r *http.Request) {
+	// AdminProductEdit permite editar un producto existente o mostrar el formulario.
 	_, perfil, _ := GetSessionData(r)
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
@@ -187,7 +194,7 @@ func AdminProductEdit(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		tmpl, err := template.ParseFiles("templates/admin/layout.html", "templates/admin/product_form.html")
+		tmpl, err := template.ParseFiles("templates/admin/layout.html", "templates/admin/formulario_producto.html")
 		if err != nil {
 			log.Println("Error cargando template admin product form:", err)
 			http.Error(w, "Error cargando templates", http.StatusInternalServerError)
@@ -220,6 +227,7 @@ func AdminProductEdit(w http.ResponseWriter, r *http.Request) {
 }
 
 func AdminProductDelete(w http.ResponseWriter, r *http.Request) {
+	// AdminProductDelete elimina un producto por su ID y redirige a la lista.
 	vars := mux.Vars(r)
 	id, _ := strconv.Atoi(vars["id"])
 
@@ -231,6 +239,7 @@ func AdminProductDelete(w http.ResponseWriter, r *http.Request) {
 }
 
 func AdminOrders(w http.ResponseWriter, r *http.Request) {
+	// AdminOrders lista todos los pedidos en la vista de administración.
 	_, perfil, _ := GetSessionData(r)
 
 	pedidos, err := models.GetAllPedidos()
@@ -240,7 +249,7 @@ func AdminOrders(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tmpl, err := template.ParseFiles("templates/admin/layout.html", "templates/admin/orders_list.html")
+	tmpl, err := template.ParseFiles("templates/admin/layout.html", "templates/admin/ordenes.html")
 	if err != nil {
 		log.Println("Error cargando templates admin orders:", err)
 		http.Error(w, "Error cargando templates", http.StatusInternalServerError)
@@ -267,6 +276,7 @@ func AdminOrders(w http.ResponseWriter, r *http.Request) {
 }
 
 func AdminOrderDetail(w http.ResponseWriter, r *http.Request) {
+	// AdminOrderDetail muestra los detalles de un pedido específico en admin.
 	_, perfil, _ := GetSessionData(r)
 	vars := mux.Vars(r)
 	id, _ := strconv.Atoi(vars["id"])
@@ -287,7 +297,7 @@ func AdminOrderDetail(w http.ResponseWriter, r *http.Request) {
 		log.Println("Error obteniendo cliente:", err)
 	}
 
-	tmpl, err := template.ParseFiles("templates/admin/layout.html", "templates/admin/order_detail.html")
+	tmpl, err := template.ParseFiles("templates/admin/layout.html", "templates/admin/detalle_orden.html")
 	if err != nil {
 		log.Println("Error cargando template admin order detail:", err)
 		http.Error(w, "Error cargando templates", http.StatusInternalServerError)
@@ -318,6 +328,7 @@ func AdminOrderDetail(w http.ResponseWriter, r *http.Request) {
 }
 
 func AdminClients(w http.ResponseWriter, r *http.Request) {
+	// AdminClients lista todos los clientes en el panel de administración.
 	_, perfil, _ := GetSessionData(r)
 
 	clientes, err := models.GetAllClientes()
@@ -327,7 +338,7 @@ func AdminClients(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tmpl, err := template.ParseFiles("templates/admin/layout.html", "templates/admin/clients_list.html")
+	tmpl, err := template.ParseFiles("templates/admin/layout.html", "templates/admin/clientes.html")
 	if err != nil {
 		log.Println("Error cargando templates admin clients:", err)
 		http.Error(w, "Error cargando templates", http.StatusInternalServerError)
@@ -351,4 +362,21 @@ func AdminClients(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println("Error ejecutando template admin clients:", err)
 	}
+}
+
+func AdminOrderStatus(w http.ResponseWriter, r *http.Request) {
+	// AdminOrderStatus actualiza el estado de un pedido (p.ej. PAGADO, ENTREGADO).
+	vars := mux.Vars(r)
+	id, _ := strconv.Atoi(vars["id"])
+
+	if r.Method == "POST" {
+		nuevoEstado := r.FormValue("estado") // PAGADO, ENTREGADO
+		err := models.UpdatePedidoStatus(id, nuevoEstado)
+		if err != nil {
+			log.Println("Error actualizando estado del pedido:", err)
+			http.Error(w, "Error actualizando estado", http.StatusInternalServerError)
+			return
+		}
+	}
+	http.Redirect(w, r, "/admin/pedidos", http.StatusSeeOther)
 }

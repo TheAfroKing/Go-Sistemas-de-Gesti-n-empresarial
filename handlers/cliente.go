@@ -11,6 +11,8 @@ import (
 )
 
 func ClientProductDetail(w http.ResponseWriter, r *http.Request) {
+	// ClientProductDetail muestra la página de detalle de un producto al cliente.
+	// Carga el producto por ID y renderiza el template correspondiente.
 	loggedIn, perfil, _ := GetSessionData(r)
 	vars := mux.Vars(r)
 	id, _ := strconv.Atoi(vars["id"])
@@ -21,7 +23,7 @@ func ClientProductDetail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tmpl, err := template.ParseFiles("templates/base.html", "templates/client/product_detail.html")
+	tmpl, err := template.ParseFiles("templates/base.html", "templates/cliente/detalle_producto.html")
 	if err != nil {
 		log.Println("Error cargando template client product detail:", err)
 		http.Error(w, "Error cargando templates", http.StatusInternalServerError)
@@ -42,6 +44,8 @@ func ClientProductDetail(w http.ResponseWriter, r *http.Request) {
 }
 
 func ClientCart(w http.ResponseWriter, r *http.Request) {
+	// ClientCart muestra el carrito del cliente autenticado, calculando subtotales
+	// y el total del carrito antes de renderizar la vista.
 	loggedIn, perfil, userIDStr := GetSessionData(r)
 	if !loggedIn {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
@@ -55,11 +59,15 @@ func ClientCart(w http.ResponseWriter, r *http.Request) {
 	carrito, err := models.GetCarritoByClienteID(userID)
 	if err != nil {
 		log.Println("Error obteniendo carrito:", err)
+		http.Error(w, "Error obteniendo carrito", http.StatusInternalServerError)
+		return
 	}
 
 	items, err := models.GetItemsByCarritoID(carrito.ID)
 	if err != nil {
 		log.Println("Error obteniendo items del carrito:", err)
+		http.Error(w, "Error obteniendo items", http.StatusInternalServerError)
+		return
 	}
 
 	type CartItemDetail struct {
@@ -82,7 +90,7 @@ func ClientCart(w http.ResponseWriter, r *http.Request) {
 		totalCart += subtotal
 	}
 
-	tmpl, err := template.ParseFiles("templates/base.html", "templates/client/cart.html")
+	tmpl, err := template.ParseFiles("templates/base.html", "templates/cliente/carrito.html")
 	if err != nil {
 		log.Println("Error cargando template client cart:", err)
 		http.Error(w, "Error cargando templates", http.StatusInternalServerError)
@@ -105,13 +113,22 @@ func ClientCart(w http.ResponseWriter, r *http.Request) {
 }
 
 func RemoveItemFromCart(w http.ResponseWriter, r *http.Request) {
+	// RemoveItemFromCart elimina un item del carrito por su ID y redirige al carrito.
 	vars := mux.Vars(r)
-	_, _ = strconv.Atoi(vars["id"])
+	id, _ := strconv.Atoi(vars["id"])
+
+	err := models.RemoveItemFromCarrito(id)
+	if err != nil {
+		log.Println("Error eliminando item del carrito:", err)
+		http.Error(w, "Error eliminando item", http.StatusInternalServerError)
+		return
+	}
 
 	http.Redirect(w, r, "/carrito", http.StatusSeeOther)
 }
 
 func ClientCheckout(w http.ResponseWriter, r *http.Request) {
+	// ClientCheckout muestra la página de checkout con el total calculado del carrito.
 	loggedIn, perfil, userIDStr := GetSessionData(r)
 	if !loggedIn {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
@@ -119,8 +136,18 @@ func ClientCheckout(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userID, _ := strconv.Atoi(userIDStr)
-	carrito, _ := models.GetCarritoByClienteID(userID)
-	items, _ := models.GetItemsByCarritoID(carrito.ID)
+	carrito, err := models.GetCarritoByClienteID(userID)
+	if err != nil {
+		log.Println("Error obteniendo carrito:", err)
+		http.Error(w, "Error al obtener carrito", http.StatusInternalServerError)
+		return
+	}
+	items, err := models.GetItemsByCarritoID(carrito.ID)
+	if err != nil {
+		log.Println("Error obteniendo items:", err)
+		http.Error(w, "Error al obtener items", http.StatusInternalServerError)
+		return
+	}
 
 	var totalCart float64
 	for _, item := range items {
@@ -128,7 +155,7 @@ func ClientCheckout(w http.ResponseWriter, r *http.Request) {
 		totalCart += float64(item.Cantidad) * prod.Precio
 	}
 
-	tmpl, err := template.ParseFiles("templates/base.html", "templates/client/checkout.html")
+	tmpl, err := template.ParseFiles("templates/base.html", "templates/cliente/checkout.html")
 	if err != nil {
 		log.Println("Error cargando template client checkout:", err)
 		http.Error(w, "Error cargando templates", http.StatusInternalServerError)
@@ -149,6 +176,8 @@ func ClientCheckout(w http.ResponseWriter, r *http.Request) {
 }
 
 func ProcessCheckout(w http.ResponseWriter, r *http.Request) {
+	// ProcessCheckout procesa la compra: crea el pedido, los detalles, actualiza stock
+	// y vacía el carrito. Redirige al perfil del usuario tras completar el pedido.
 	loggedIn, _, userIDStr := GetSessionData(r)
 	if !loggedIn {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
@@ -159,8 +188,18 @@ func ProcessCheckout(w http.ResponseWriter, r *http.Request) {
 		userID, _ := strconv.Atoi(userIDStr)
 		metodoPago := r.FormValue("metodo_pago") // tarjeta, transferencia, etc
 
-		carrito, _ := models.GetCarritoByClienteID(userID)
-		items, _ := models.GetItemsByCarritoID(carrito.ID)
+		carrito, err := models.GetCarritoByClienteID(userID)
+		if err != nil {
+			log.Println("Error obteniendo carrito:", err)
+			http.Error(w, "Error interno", http.StatusInternalServerError)
+			return
+		}
+		items, err := models.GetItemsByCarritoID(carrito.ID)
+		if err != nil {
+			log.Println("Error obteniendo items:", err)
+			http.Error(w, "Error interno", http.StatusInternalServerError)
+			return
+		}
 
 		var totalCart float64
 		for _, item := range items {
@@ -194,6 +233,7 @@ func ProcessCheckout(w http.ResponseWriter, r *http.Request) {
 }
 
 func ClientProfile(w http.ResponseWriter, r *http.Request) {
+	// ClientProfile muestra el perfil del cliente autenticado junto con sus pedidos.
 	loggedIn, perfil, userIDStr := GetSessionData(r)
 	if !loggedIn {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
@@ -201,14 +241,19 @@ func ClientProfile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userID, _ := strconv.Atoi(userIDStr)
-	cliente, _ := models.GetClienteByID(userID)
+	cliente, err := models.GetClienteByID(userID)
+	if err != nil {
+		log.Println("Error obteniendo cliente:", err)
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
 
 	myPedidos, err := models.GetPedidosByClienteID(userID)
 	if err != nil {
 		log.Println("Error obteniendo pedidos del cliente:", err)
 	}
 
-	tmpl, err := template.ParseFiles("templates/base.html", "templates/client/profile.html")
+	tmpl, err := template.ParseFiles("templates/base.html", "templates/cliente/perfil.html")
 	if err != nil {
 		log.Println("Error cargando template client profile:", err)
 		http.Error(w, "Error cargando templates", http.StatusInternalServerError)
@@ -233,6 +278,7 @@ func ClientProfile(w http.ResponseWriter, r *http.Request) {
 }
 
 func ClientProfileEdit(w http.ResponseWriter, r *http.Request) {
+	// ClientProfileEdit permite editar los datos del perfil del cliente autenticado.
 	loggedIn, perfil, userIDStr := GetSessionData(r)
 	if !loggedIn {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
@@ -256,9 +302,14 @@ func ClientProfileEdit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cliente, _ := models.GetClienteByID(userID)
+	cliente, err := models.GetClienteByID(userID)
+	if err != nil {
+		log.Println("Error obteniendo cliente:", err)
+		http.Error(w, "Error al cargar perfil", http.StatusInternalServerError)
+		return
+	}
 
-	tmpl, err := template.ParseFiles("templates/base.html", "templates/client/profile_edit.html")
+	tmpl, err := template.ParseFiles("templates/base.html", "templates/cliente/editar_perfil.html")
 	if err != nil {
 		log.Println("Error cargando template client profile edit:", err)
 		http.Error(w, "Error cargando templates", http.StatusInternalServerError)
@@ -279,6 +330,7 @@ func ClientProfileEdit(w http.ResponseWriter, r *http.Request) {
 }
 
 func ClientOrderDetail(w http.ResponseWriter, r *http.Request) {
+	// ClientOrderDetail muestra los detalles de un pedido del cliente autenticado.
 	loggedIn, perfil, userIDStr := GetSessionData(r)
 	if !loggedIn {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
@@ -300,9 +352,14 @@ func ClientOrderDetail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	detalles, _ := models.GetDetallesByPedidoID(orderID)
+	detalles, err := models.GetDetallesByPedidoID(orderID)
+	if err != nil {
+		log.Println("Error obteniendo detalles:", err)
+		http.Error(w, "Error al cargar detalles de la orden", http.StatusInternalServerError)
+		return
+	}
 
-	tmpl, err := template.ParseFiles("templates/base.html", "templates/client/order_detail.html")
+	tmpl, err := template.ParseFiles("templates/base.html", "templates/cliente/detalle_orden.html")
 	if err != nil {
 		log.Println("Error cargando template client order detail:", err)
 		http.Error(w, "Error cargando templates", http.StatusInternalServerError)
