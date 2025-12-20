@@ -1,0 +1,45 @@
+{{define "content"}}
+<div class="container-fluid">
+    <h1 class="h3 mb-4 text-gray-800">Clientes Registrados</h1>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Lista de Clientes</h6>
+        </div>
+        <div class="card-body">
+            {{if .Clientes}}
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Teléfono</th>
+                            <th>Dirección</th>
+                            <th>Fecha Registro</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{range .Clientes}}
+                        <tr>
+                            <td>{{.ID}}</td>
+                            <td>{{.Nombre}}</td>
+                            <td>{{.Email}}</td>
+                            <td>{{.Telefono}}</td>
+                            <td>{{.Direccion}}</td>
+                            <td>{{.FechaRegistro}}</td>
+                        </tr>
+                        {{end}}
+                    </tbody>
+                </table>
+            </div>
+            {{else}}
+            <div class="text-center py-4">
+                <p class="text-gray-500 mb-0">No hay clientes registrados.</p>
+            </div>
+            {{end}}
+        </div>
+    </div>
+</div>
+{{end}}

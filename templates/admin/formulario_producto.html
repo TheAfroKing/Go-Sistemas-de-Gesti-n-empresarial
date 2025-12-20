@@ -1,0 +1,65 @@
+{{define "content"}}
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">{{if .IsEdit}}Editar Producto{{else}}Nuevo Producto{{end}}</h1>
+        <a href="/admin/productos" class="btn btn-secondary btn-sm shadow-sm">
+            <i class="fas fa-arrow-left fa-sm text-white-50"></i> Volver
+        </a>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Información del Producto</h6>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="/admin/productos/editar/{{.Producto.ID}}">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="nombre" class="form-label">Nombre del Producto</label>
+                        <input type="text" class="form-control" id="nombre" name="nombre"
+                            value="{{if .IsEdit}}{{.Producto.Nombre}}{{end}}" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="sku" class="form-label">SKU</label>
+                        <input type="text" class="form-control" id="sku" name="sku"
+                            value="{{if .IsEdit}}{{.Producto.SKU}}{{end}}" required>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="descripcion" class="form-label">Descripción</label>
+                    <textarea class="form-control" id="descripcion" name="descripcion"
+                        rows="3">{{if .IsEdit}}{{.Producto.Descripcion}}{{end}}</textarea>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="precio" class="form-label">Precio ($)</label>
+                        <input type="number" step="0.01" class="form-control" id="precio" name="precio"
+                            value="{{if .IsEdit}}{{.Producto.Precio}}{{end}}" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="stock" class="form-label">Stock</label>
+                        <input type="number" class="form-control" id="stock" name="stock"
+                            value="{{if .IsEdit}}{{.Producto.Stock}}{{end}}" required>
+                    </div>
+                    <div class="col-md-4 mb-3 d-flex align-items-center">
+                        <div class="form-check mt-4">
+                            <input class="form-check-input" type="checkbox" id="activo" name="activo" {{if .IsEdit}}{{if
+                                .Producto.Activo}}checked{{end}}{{else}}checked{{end}}>
+                            <label class="form-check-label" for="activo">
+                                Producto Activo
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <hr>
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="fas fa-save me-2"></i> {{if .IsEdit}}Actualizar Producto{{else}}Guardar Producto{{end}}
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{{end}}

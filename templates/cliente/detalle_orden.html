@@ -1,0 +1,65 @@
+{{define "content"}}
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Detalle del Pedido #{{.Pedido.ID}}</h2>
+        <a href="/perfil" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Volver al Profil
+        </a>
+    </div>
+
+    <div class="row">
+        <!-- Info Pedido -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header">Información</div>
+                <div class="card-body">
+                    <p><strong>Fecha:</strong> {{.Pedido.Fecha}}</p>
+                    <p><strong>Estado:</strong> <span class="badge bg-secondary">{{.Pedido.Estado}}</span></p>
+                    <p><strong>Método de Pago:</strong> {{.Pedido.MetodoPago}}</p>
+                    <h4 class="mt-4">Total: ${{printf "%.2f" .Pedido.Total}}</h4>
+                </div>
+            </div>
+        </div>
+
+        <!-- Items -->
+        <div class="col-md-8 mb-4">
+            <div class="card shadow">
+                <div class="card-header">Productos</div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th>Cant</th>
+                                    <th>Precio Unit.</th>
+                                    <th>Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{range .Detalles}}
+                                <tr>
+                                    <td>
+                                        <!-- Note: We might need to fetch product name, currently DetallePedido might not have it directly populated unless we join or fetch. 
+                                             AdminOrderDetail fetched Cliente, but here we likely need Product names. 
+                                             We'll check handler logic. For now assuming we can pass a enriched struct or simpler just ID/Price.
+                                             Wait, DetallePedido struct in models only has IDs. 
+                                             The handler should probably enrich this or we might display IDs if lazy. 
+                                             Let's aim for better UX. I'll need to fetch products in handler or use a struct that includes product info.
+                                         -->
+                                        Producto ID: {{.IDProducto}}
+                                    </td>
+                                    <td>{{.Cantidad}}</td>
+                                    <td>${{printf "%.2f" .PrecioUnitario}}</td>
+                                    <td>${{printf "%.2f" .Subtotal}}</td>
+                                </tr>
+                                {{end}}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{end}}
